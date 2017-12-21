@@ -20,9 +20,23 @@ use std::marker::PhantomData; // this sucks!
 
 #[cfg(test)]
 mod tests {
+	use super::*;
     #[test]
     fn it_works() {
-        assert_eq!(2 + 2, 4);
+		let mut ar=Array::<String,i32>::new();
+		ar.push(String::from("foo"));
+		ar.push(String::from("bar"));
+		ar.push(String::from("baz"));
+		ar.push(String::from("qux"));
+		let ia=1i32;
+		let ib=2i32;
+		let mut extracted=String::new();
+		for x in ar.iter(){
+			extracted.push_str(x);
+		}
+		assert!(extracted=="foobarbazqux");
+		assert!(ar.len()==4);
+		assert_eq!(ar[ia]=="bar",ar[ib]=="baz");
     }
 }
 
