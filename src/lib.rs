@@ -37,6 +37,10 @@ mod tests {
 		assert!(extracted=="foobarbazqux");
 		assert!(ar.len()==4);
 		assert_eq!(ar[ia]=="bar",ar[ib]=="baz");
+
+		let a3=Array3(00,10,20);
+		assert!(a3[1i32]==10);
+		
     }
 }
 
