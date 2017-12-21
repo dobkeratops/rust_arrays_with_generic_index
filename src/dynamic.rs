@@ -12,10 +12,20 @@ pub trait IndexTrait  {	// TODO - would be better to use official from/into, but
 	fn my_from(x:usize)->Self;
 	fn my_into(self)->usize;
 }
-impl IndexTrait for i32{
-	fn my_from(x:usize)->Self{x as Self}
-	fn my_into(self)->usize{self as usize}
-}
+macro_rules! impl_index_trait_for{($tname:ty)=>{
+	impl IndexTrait for $tname{
+		fn my_from(x:usize)->Self{x as Self}
+		fn my_into(self)->usize{self as usize}
+	}
+}}
+// DONT implement for usize, that is implemented directly.
+impl_index_trait_for!(i32);
+impl_index_trait_for!(u32);
+impl_index_trait_for!(i16);
+impl_index_trait_for!(u16);
+impl_index_trait_for!(isize);
+impl_index_trait_for!(i8);
+impl_index_trait_for!(u8);
 
 
 // grrr. can't impl theirs this way round?!
@@ -341,7 +351,7 @@ where
 	
 }
 
-
+// access by the arrays dedicated index,
 impl<T,INDEX:IndexTrait> Index<INDEX> for Array<T,INDEX>{
 	type Output=T;
 	fn index(&self,i:INDEX)->&T{
@@ -353,6 +363,19 @@ impl<T,INDEX:IndexTrait> IndexMut<INDEX> for Array<T,INDEX>{
 		self.0.index_mut(i.my_into())
 	}
 }
+impl<T,INDEX:IndexTrait> Index<usize> for Array<T,INDEX>{
+	type Output=T;
+	fn index(&self,i:usize)->&T{
+		&self.0.index(i)
+	}
+}
+impl<T,INDEX:IndexTrait> IndexMut<usize> for Array<T,INDEX>{
+	fn index_mut(&mut self,i:usize)->&mut T{
+		self.0.index_mut(i)
+	}
+}
+
+
 impl<T:Clone,INDEX:IndexTrait> Clone for Array<T,INDEX>{
 	fn clone(&self)->Self{
 		Array(self.0.clone(),PhantomData)

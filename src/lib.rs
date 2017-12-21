@@ -9,6 +9,12 @@
 #![feature(slice_rotate)]
 #![feature(swap_with_slice)]
 
+pub mod fixed;
+pub mod dynamic;
+pub use fixed::*;
+pub use dynamic::*;
+
+
 use std::collections::range::RangeArgument;
 use std::cmp::Ordering;
 use std::borrow::Borrow;
@@ -36,17 +42,13 @@ mod tests {
 		}
 		assert!(extracted=="foobarbazqux");
 		assert!(ar.len()==4);
-		assert_eq!(ar[ia]=="bar",ar[ib]=="baz");
-
+		assert!(ar[ia]=="bar" && ar[ib]=="baz");
+		assert!(ar[3 as usize]=="qux");
 		let a3=Array3(00,10,20);
 		assert!(a3[1i32]==10);
 		
     }
 }
 
-pub mod fixedsizearray;
-pub mod dynamicarray;
-pub use fixedsizearray::*;
-pub use dynamicarray::*;
 
 

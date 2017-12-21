@@ -1,5 +1,5 @@
 [package]
-name = "vec_with_generic_index"
+name = "vecgenericindex"
 version = "0.1.0"
 authors = ["dobkeratops <dobkeratopsgit@gmail.com>"]
 
