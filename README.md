@@ -14,7 +14,10 @@ approach:-
 * 'Vec<T>' is wrapped in Array<T,INDEX>
 * there is an IndexTrait which must be implemented for indexable types, which must provide conversion to and from usize , for interop with the underlying rust vector implementation
 * There are small 'Array2,Array3, Array4' types to replace [T;2],[T;3],[T;4] with similar support (WIP)
+
+Unresolved Issues:-
 * no solution yet for slices (TODO!)
+* what to do about the .enumerate() adapter, which is incredibly useful and important for indexed reasoning; perhaps we have to implement a workalike to deal with this.
 
 Possible future work:-
 It would be best to re-implement Vec itself with custom Length,Capacity fields, e.g. 'a 32bit indexed vector/64bit build' would take 16bytes for the struct instead of 24. This is lower priority, and it's possible the larger vec gives useful space for a SmallVec optimization later. 
