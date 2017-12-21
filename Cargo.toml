@@ -1,0 +1,6 @@
+[package]
+name = "vec_with_generic_index"
+version = "0.1.0"
+authors = ["dobkeratops <dobkeratopsgit@gmail.com>"]
+
+[dependencies]
