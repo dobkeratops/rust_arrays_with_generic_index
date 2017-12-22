@@ -88,7 +88,6 @@ impl<T:Clone,I:IndexTrait+Clone> Array<T,I>{
 }
 
 impl<T,I:IndexTrait+Clone> Array<T,I>{
-	pub fn num_elems(&self)->i32{ self.0.len() as i32} // TODO - figure out generic int
 	pub fn new()->Self{ Array(Vec::new(),PhantomData) }
 	pub fn reserve(&mut self, additional: I){
 		self.0.reserve(additional.my_into());
@@ -183,117 +182,115 @@ impl<T,INDEX:IndexTrait> Array<T,INDEX>{
 		self.0.drain_filter(filter)
 	}
 }
-
+/*
 impl<T,INDEX:IndexTrait> Deref for Array<T,INDEX>{
 	type Target=[T];
 	fn deref(&self)->&Self::Target { self.0.deref() }
 }
-
+*/
 impl<T,INDEX:IndexTrait> Array<T,INDEX>{
-	fn len(&self)->INDEX{INDEX::my_from(self.0.len())}
-	fn is_empty(&self)->bool{self.0.is_empty()}
-	fn first(&self)->Option<&T>{self.0.first()}
-	fn first_mut(&mut self)->Option<&mut T>{self.0.first_mut()}
-	fn split_first(&self)->Option<(&T,&[T])>{self.0.split_first()}
-	fn split_first_mut(&mut self)->Option<(&mut T, &mut [T])>{ self.0.split_first_mut() }
-	fn split_last(&self)->Option<(&T,&[T])>{self.0.split_last()}
-	fn split_last_mut(&mut self)->Option<(&mut T, &mut[T])>{self.0.split_last_mut()}
-	fn last(&self)->Option<&T>{self.0.last()}
-	fn last_mut(&mut self)->Option<&mut T>{self.0.last_mut()}
-	fn get<I>(&self, index:I)->Option<&<I as SliceIndex<[T]> >::Output>
+	pub fn len(&self)->INDEX{INDEX::my_from(self.0.len())}
+	pub fn is_empty(&self)->bool{self.0.is_empty()}
+	pub fn first(&self)->Option<&T>{self.0.first()}
+	pub fn first_mut(&mut self)->Option<&mut T>{self.0.first_mut()}
+	pub fn split_first(&self)->Option<(&T,&[T])>{self.0.split_first()}
+	pub fn split_first_mut(&mut self)->Option<(&mut T, &mut [T])>{ self.0.split_first_mut() }
+	pub fn split_last(&self)->Option<(&T,&[T])>{self.0.split_last()}
+	pub fn split_last_mut(&mut self)->Option<(&mut T, &mut[T])>{self.0.split_last_mut()}
+	pub fn last(&self)->Option<&T>{self.0.last()}
+	pub fn last_mut(&mut self)->Option<&mut T>{self.0.last_mut()}
+	pub fn get<I>(&self, index:I)->Option<&<I as SliceIndex<[T]> >::Output>
 		where I:SliceIndex<[T]>
 	{
 		self.0.get(index)
 	}
-	fn get_mut<I>(&mut self, index:I)->Option<&mut <I as SliceIndex<[T]>>::Output>
+	pub fn get_mut<I>(&mut self, index:I)->Option<&mut <I as SliceIndex<[T]>>::Output>
 		where I:SliceIndex<[T]>
 	{
 		self.0.get_mut(index)
 	}
-	unsafe fn get_unchecked<I>(&self, index: I) -> &<I as SliceIndex<[T]>>::Output 
-where
-    I: SliceIndex<[T]> {self.0.get_unchecked(index)}
-unsafe fn get_unchecked_mut<I>(
+	pub unsafe fn get_unchecked<I>(&self, index: I) -> &<I as SliceIndex<[T]>>::Output 
+		where I: SliceIndex<[T]> {self.0.get_unchecked(index)}
+	unsafe fn get_unchecked_mut<I>(
 	    &mut self, 
 		index: I
 	) -> &mut <I as SliceIndex<[T]>>::Output 
-	where
-		I: SliceIndex<[T]>{
+		where I: SliceIndex<[T]>{
 		self.0.get_unchecked_mut(index)
 	}
-	fn as_ptr(&self)->*const T{self.0.as_ptr()}
-	fn as_mut_ptr(&mut self)->*mut T{self.0.as_mut_ptr()}
-	fn swap(&mut self, a:INDEX,b:INDEX){
+	pub fn as_ptr(&self)->*const T{self.0.as_ptr()}
+	pub fn as_mut_ptr(&mut self)->*mut T{self.0.as_mut_ptr()}
+	pub fn swap(&mut self, a:INDEX,b:INDEX){
 		self.0.swap(a.my_into(),b.my_into())
 	}
-	fn reverse(&mut self){self.0.reverse()}
-	fn iter(&self)->Iter<T>{self.0.iter()}
-	fn iter_mut(&mut self)->IterMut<T>{self.0.iter_mut()}
-	fn windows(&self,size:INDEX)->Windows<T>{self.0.windows(size.my_into())}
-	fn chunks(&self,chunk_size:INDEX)->Chunks<T>{self.0.chunks(chunk_size.my_into())}
+	pub fn reverse(&mut self){self.0.reverse()}
+	pub fn iter(&self)->Iter<T>{self.0.iter()}
+	pub fn iter_mut(&mut self)->IterMut<T>{self.0.iter_mut()}
+	pub fn windows(&self,size:INDEX)->Windows<T>{self.0.windows(size.my_into())}
+	pub fn chunks(&self,chunk_size:INDEX)->Chunks<T>{self.0.chunks(chunk_size.my_into())}
 	
-	fn chunks_mut(&mut self,chunk_size:INDEX)->ChunksMut<T>{self.0.chunks_mut(chunk_size.my_into())}
-	fn split_at(&self, mid: INDEX) -> (&[T], &[T]){
+	pub fn chunks_mut(&mut self,chunk_size:INDEX)->ChunksMut<T>{self.0.chunks_mut(chunk_size.my_into())}
+	pub fn split_at(&self, mid: INDEX) -> (&[T], &[T]){
 		self.0.split_at(mid.my_into())
 	}
-	fn split_at_mut(&mut self, mid: INDEX) -> (&mut [T], &mut [T]){
+	pub fn split_at_mut(&mut self, mid: INDEX) -> (&mut [T], &mut [T]){
 		self.0.split_at_mut(mid.my_into())
 	}
-	fn split<F>(&self, pred: F) -> Split<T, F> 
+	pub fn split<F>(&self, pred: F) -> Split<T, F> 
 		where F:FnMut(&T)->bool
 	{
 		self.0.split(pred)
 	}
-	fn split_mut<F>(&mut self, pred: F) -> SplitMut<T, F> 
+	pub fn split_mut<F>(&mut self, pred: F) -> SplitMut<T, F> 
 		where F: FnMut(&T) -> bool
 	{
 		self.0.split_mut(pred)
 	}
-	fn rsplit<F>(&self, pred: F) -> RSplit<T, F> 
+	pub fn rsplit<F>(&self, pred: F) -> RSplit<T, F> 
 		where F: FnMut(&T) -> bool, 
 	{
 		self.0.rsplit(pred)
 	}
-	fn rsplit_mut<F>(&mut self, pred: F) -> RSplitMut<T, F>
+	pub fn rsplit_mut<F>(&mut self, pred: F) -> RSplitMut<T, F>
 		where F: FnMut(&T) -> bool	
 	{
 		self.0.rsplit_mut(pred)
 	}
-	fn splitn<F>(&self, n: INDEX, pred: F) -> SplitN<T, F> 
+	pub fn splitn<F>(&self, n: INDEX, pred: F) -> SplitN<T, F> 
 		where	F: FnMut(&T) -> bool
 	{
 		self.0.splitn(n.my_into(),pred)
 	}
-	fn splitn_mut<F>(&mut self, n: INDEX, pred: F) -> SplitNMut<T, F> 
+	pub fn splitn_mut<F>(&mut self, n: INDEX, pred: F) -> SplitNMut<T, F> 
 		where F: FnMut(&T) -> bool
 	{
 		self.0.splitn_mut(n.my_into(),pred)
 	}
-	fn rsplitn<F>(&self, n: INDEX, pred: F) -> RSplitN<T, F> 
+	pub fn rsplitn<F>(&self, n: INDEX, pred: F) -> RSplitN<T, F> 
 	where F: FnMut(&T) -> bool{
 		self.0.rsplitn(n.my_into(),pred)
 	}
-	fn rsplitn_mut<F>(&mut self, n: INDEX, pred: F) -> RSplitNMut<T, F> 
+	pub fn rsplitn_mut<F>(&mut self, n: INDEX, pred: F) -> RSplitNMut<T, F> 
 where
     F: FnMut(&T) -> bool{
 		self.0.rsplitn_mut(n.my_into(),pred)
 	}
-	fn contains(&self, x: &T) -> bool 
+	pub fn contains(&self, x: &T) -> bool 
 where
     T: PartialEq<T>{
 		self.0.contains(x)
 	}
-	fn starts_with(&self, needle: &[T]) -> bool 
+	pub fn starts_with(&self, needle: &[T]) -> bool 
 where
     T: PartialEq<T>{
 		self.0.starts_with(needle)
 	}
-	fn ends_with(&self, needle: &[T]) -> bool 
+	pub fn ends_with(&self, needle: &[T]) -> bool 
 where
     T: PartialEq<T>{
 		self.0.ends_with(needle)
 	}
-	fn binary_search(&self, a: &T) -> Result<INDEX, INDEX> 
+	pub fn binary_search(&self, a: &T) -> Result<INDEX, INDEX> 
 where
     T: Ord{
 		match self.0.binary_search(a){
@@ -301,14 +298,14 @@ where
 			Err(x)=>Err(INDEX::my_from(x))
 		}
 	}
-	fn binary_search_by<'a, F>(&'a self, f: F) -> Result<INDEX, INDEX> 
+	pub fn binary_search_by<'a, F>(&'a self, f: F) -> Result<INDEX, INDEX> 
 		where F: FnMut(&'a T) -> Ordering{
 		match self.0.binary_search_by(f){
 			Ok(x)=>Ok(INDEX::my_from(x)),
 			Err(x)=>Err(INDEX::my_from(x))
 		}
 	}
-	fn binary_search_by_key<'a, B, F>(&'a self, b: &B, f: F) -> Result<INDEX, INDEX> 
+	pub fn binary_search_by_key<'a, B, F>(&'a self, b: &B, f: F) -> Result<INDEX, INDEX> 
 	where
 		B: Ord,
 	    F: FnMut(&'a T) -> B,
@@ -319,33 +316,33 @@ where
 			Err(x)=>Err(INDEX::my_from(x))
 		}
 	}
-	fn sort(&mut self) where T:Ord{
+	pub fn sort(&mut self) where T:Ord{
 		self.0.sort()
 	}
-	fn sort_by<F>(&mut self,f:F) where F:FnMut(&T,&T)->Ordering{
+	pub fn sort_by<F>(&mut self,f:F) where F:FnMut(&T,&T)->Ordering{
 		self.0.sort_by(f)
 	}
-	fn sort_by_key<F,B>(&mut self,f:F) where B:Ord,F:FnMut(&T)->B{
+	pub fn sort_by_key<F,B>(&mut self,f:F) where B:Ord,F:FnMut(&T)->B{
 		self.0.sort_by_key(f)
 	}
-	fn sort_unstable(&mut self)where T:Ord{self.0.sort_unstable()}
+	pub fn sort_unstable(&mut self)where T:Ord{self.0.sort_unstable()}
 	
-	fn sort_unstable_by<F>(&mut self,f:F)where T:Ord,F:FnMut(&T,&T)->Ordering{self.0.sort_unstable_by(f)}
+	pub fn sort_unstable_by<F>(&mut self,f:F)where T:Ord,F:FnMut(&T,&T)->Ordering{self.0.sort_unstable_by(f)}
 
-	fn sort_unstable_by_key<B:Ord,F>(&mut self,f:F)where T:Ord,F:FnMut(&T)->B{self.0.sort_unstable_by_key(f)}
-	fn rotate(&mut self,mid:INDEX){
+	pub fn sort_unstable_by_key<B:Ord,F>(&mut self,f:F)where T:Ord,F:FnMut(&T)->B{self.0.sort_unstable_by_key(f)}
+	pub fn rotate(&mut self,mid:INDEX){
 		self.0.rotate(mid.my_into())
 	}
-	fn clone_from_slice(&mut self, src:&[T]) where T:Clone{
+	pub fn clone_from_slice(&mut self, src:&[T]) where T:Clone{
 		self.0.clone_from_slice(src)
 	}
-	fn copy_from_slice(&mut self, src:&[T]) where T:Copy{
+	pub fn copy_from_slice(&mut self, src:&[T]) where T:Copy{
 		self.0.copy_from_slice(src)
 	}
-	fn swap_with_slice(&mut self, src:&mut[T]){
+	pub fn swap_with_slice(&mut self, src:&mut[T]){
 		self.0.swap_with_slice(src)
 	}
-	fn to_vec(&self)->Array<T> where T:Clone{
+	pub fn to_vec(&self)->Array<T> where T:Clone{
 		Array(self.0.to_vec(),PhantomData)
 	}
 	

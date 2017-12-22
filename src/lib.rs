@@ -40,8 +40,9 @@ mod tests {
 		for x in ar.iter(){
 			extracted.push_str(x);
 		}
+		let ar_len:i32 = ar.len();
 		assert!(extracted=="foobarbazqux");
-		assert!(ar.len()==4);
+		assert!(ar_len==4);
 		assert!(ar[ia]=="bar" && ar[ib]=="baz");
 		assert!(ar[3 as usize]=="qux");
 		let a3=Array3(00,10,20);
