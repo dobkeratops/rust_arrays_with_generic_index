@@ -8,25 +8,6 @@ use super::*;
 // wrapper for Vec<T> with indexing defaulting to i32
 // todo , real vector impl, with smallvec  stuff
 
-pub trait IndexTrait  {	// TODO - would be better to use official from/into, but it doesn't let us impl
-	fn my_from(x:usize)->Self;
-	fn my_into(self)->usize;
-}
-macro_rules! impl_index_trait_for{($tname:ty)=>{
-	impl IndexTrait for $tname{
-		fn my_from(x:usize)->Self{x as Self}
-		fn my_into(self)->usize{self as usize}
-	}
-}}
-// DONT implement for usize, that is implemented directly.
-impl_index_trait_for!(i32);
-impl_index_trait_for!(u32);
-impl_index_trait_for!(i16);
-impl_index_trait_for!(u16);
-impl_index_trait_for!(isize);
-impl_index_trait_for!(i8);
-impl_index_trait_for!(u8);
-
 
 // grrr. can't impl theirs this way round?!
 //trait MyInto {
@@ -73,8 +54,8 @@ impl<T:Clone,I:IndexTrait+Clone> Array<T,I>{
 	}
 	pub fn from_fn<F:Fn(I)->T>(count:I,f:F)->Self{
 		let mut v=Vec::new();
-		v.reserve(count.clone().my_into());
-		for x in 0..count.my_into() {v.push(f(I::my_from(x)))}
+		v.reserve(count.clone().into_usize());
+		for x in 0..count.into_usize() {v.push(f(I::from_usize(x)))}
 		Array(v,PhantomData)
 	}
 	pub fn map<B,F:Fn(&T)->B>(&self,f:F)->Array<B,I>{
@@ -90,12 +71,12 @@ impl<T:Clone,I:IndexTrait+Clone> Array<T,I>{
 impl<T,I:IndexTrait+Clone> Array<T,I>{
 	pub fn new()->Self{ Array(Vec::new(),PhantomData) }
 	pub fn reserve(&mut self, additional: I){
-		self.0.reserve(additional.my_into());
+		self.0.reserve(additional.into_usize());
 	}	
 	pub fn push(&mut self,val:T){self.0.push(val)}
 	pub fn shrink_to_fit(&mut self){self.0.shrink_to_fit()}
 	pub fn truncate(&mut self, len: I){
-		self.0.truncate(len.my_into());
+		self.0.truncate(len.into_usize());
 	}
 	pub fn as_slice(&self) -> &[T]{
 		self.0.as_slice()
@@ -104,13 +85,13 @@ impl<T,I:IndexTrait+Clone> Array<T,I>{
 		self.0.as_mut_slice()
 	}
 	pub fn swap_remove(&mut self, index: I) -> T{
-		self.0.swap_remove(index.my_into())
+		self.0.swap_remove(index.into_usize())
 	}
 	pub fn insert(&mut self, index: I, element: T){
-		self.0.insert(index.my_into(),element)
+		self.0.insert(index.into_usize(),element)
 	}
 	pub fn remove(&mut self, index: I) -> T{
-		self.0.remove(index.my_into())
+		self.0.remove(index.into_usize())
 	}
 	// aka filter in place
 	pub fn retain<F:FnMut(&T)->bool>(&mut self, f: F) {
@@ -145,12 +126,12 @@ impl<T,I:IndexTrait+Clone> Array<T,I>{
 //	}
 //	pub fn is_empty(&self)->bool{ self.0.is_empty()}
 	pub fn split_off(&mut self,at:I)->Array<T>{
-		Array(self.0.split_off(at.my_into()),PhantomData)
+		Array(self.0.split_off(at.into_usize()),PhantomData)
 	}
 }
 impl<T:Clone,I:IndexTrait> Array<T,I>{
 	pub fn resize(&mut self, new_len:I, value:T){
-		self.0.resize(new_len.my_into(),value)
+		self.0.resize(new_len.into_usize(),value)
 	}
 	pub fn extend_from_slice(&mut self, other:&[T]){
 		self.0.extend_from_slice(other)
@@ -159,7 +140,7 @@ impl<T:Clone,I:IndexTrait> Array<T,I>{
 
 impl<T:Default,I:IndexTrait> Array<T,I>{
 	pub fn resize_default(&mut self, new_len:I){
-		self.0.resize_default(new_len.my_into())
+		self.0.resize_default(new_len.into_usize())
 	}
 }
 
@@ -189,7 +170,7 @@ impl<T,INDEX:IndexTrait> Deref for Array<T,INDEX>{
 }
 */
 impl<T,INDEX:IndexTrait> Array<T,INDEX>{
-	pub fn len(&self)->INDEX{INDEX::my_from(self.0.len())}
+	pub fn len(&self)->INDEX{INDEX::from_usize(self.0.len())}
 	pub fn is_empty(&self)->bool{self.0.is_empty()}
 	pub fn first(&self)->Option<&T>{self.0.first()}
 	pub fn first_mut(&mut self)->Option<&mut T>{self.0.first_mut()}
@@ -221,20 +202,20 @@ impl<T,INDEX:IndexTrait> Array<T,INDEX>{
 	pub fn as_ptr(&self)->*const T{self.0.as_ptr()}
 	pub fn as_mut_ptr(&mut self)->*mut T{self.0.as_mut_ptr()}
 	pub fn swap(&mut self, a:INDEX,b:INDEX){
-		self.0.swap(a.my_into(),b.my_into())
+		self.0.swap(a.into_usize(),b.into_usize())
 	}
 	pub fn reverse(&mut self){self.0.reverse()}
 	pub fn iter(&self)->Iter<T>{self.0.iter()}
 	pub fn iter_mut(&mut self)->IterMut<T>{self.0.iter_mut()}
-	pub fn windows(&self,size:INDEX)->Windows<T>{self.0.windows(size.my_into())}
-	pub fn chunks(&self,chunk_size:INDEX)->Chunks<T>{self.0.chunks(chunk_size.my_into())}
+	pub fn windows(&self,size:INDEX)->Windows<T>{self.0.windows(size.into_usize())}
+	pub fn chunks(&self,chunk_size:INDEX)->Chunks<T>{self.0.chunks(chunk_size.into_usize())}
 	
-	pub fn chunks_mut(&mut self,chunk_size:INDEX)->ChunksMut<T>{self.0.chunks_mut(chunk_size.my_into())}
+	pub fn chunks_mut(&mut self,chunk_size:INDEX)->ChunksMut<T>{self.0.chunks_mut(chunk_size.into_usize())}
 	pub fn split_at(&self, mid: INDEX) -> (&[T], &[T]){
-		self.0.split_at(mid.my_into())
+		self.0.split_at(mid.into_usize())
 	}
 	pub fn split_at_mut(&mut self, mid: INDEX) -> (&mut [T], &mut [T]){
-		self.0.split_at_mut(mid.my_into())
+		self.0.split_at_mut(mid.into_usize())
 	}
 	pub fn split<F>(&self, pred: F) -> Split<T, F> 
 		where F:FnMut(&T)->bool
@@ -259,21 +240,21 @@ impl<T,INDEX:IndexTrait> Array<T,INDEX>{
 	pub fn splitn<F>(&self, n: INDEX, pred: F) -> SplitN<T, F> 
 		where	F: FnMut(&T) -> bool
 	{
-		self.0.splitn(n.my_into(),pred)
+		self.0.splitn(n.into_usize(),pred)
 	}
 	pub fn splitn_mut<F>(&mut self, n: INDEX, pred: F) -> SplitNMut<T, F> 
 		where F: FnMut(&T) -> bool
 	{
-		self.0.splitn_mut(n.my_into(),pred)
+		self.0.splitn_mut(n.into_usize(),pred)
 	}
 	pub fn rsplitn<F>(&self, n: INDEX, pred: F) -> RSplitN<T, F> 
 	where F: FnMut(&T) -> bool{
-		self.0.rsplitn(n.my_into(),pred)
+		self.0.rsplitn(n.into_usize(),pred)
 	}
 	pub fn rsplitn_mut<F>(&mut self, n: INDEX, pred: F) -> RSplitNMut<T, F> 
 where
     F: FnMut(&T) -> bool{
-		self.0.rsplitn_mut(n.my_into(),pred)
+		self.0.rsplitn_mut(n.into_usize(),pred)
 	}
 	pub fn contains(&self, x: &T) -> bool 
 where
@@ -294,15 +275,15 @@ where
 where
     T: Ord{
 		match self.0.binary_search(a){
-			Ok(x)=>Ok(INDEX::my_from(x)),
-			Err(x)=>Err(INDEX::my_from(x))
+			Ok(x)=>Ok(INDEX::from_usize(x)),
+			Err(x)=>Err(INDEX::from_usize(x))
 		}
 	}
 	pub fn binary_search_by<'a, F>(&'a self, f: F) -> Result<INDEX, INDEX> 
 		where F: FnMut(&'a T) -> Ordering{
 		match self.0.binary_search_by(f){
-			Ok(x)=>Ok(INDEX::my_from(x)),
-			Err(x)=>Err(INDEX::my_from(x))
+			Ok(x)=>Ok(INDEX::from_usize(x)),
+			Err(x)=>Err(INDEX::from_usize(x))
 		}
 	}
 	pub fn binary_search_by_key<'a, B, F>(&'a self, b: &B, f: F) -> Result<INDEX, INDEX> 
@@ -312,8 +293,8 @@ where
 		T: Ord
 	{
 		match self.0.binary_search_by_key(b,f){
-			Ok(x)=>Ok(INDEX::my_from(x)),
-			Err(x)=>Err(INDEX::my_from(x))
+			Ok(x)=>Ok(INDEX::from_usize(x)),
+			Err(x)=>Err(INDEX::from_usize(x))
 		}
 	}
 	pub fn sort(&mut self) where T:Ord{
@@ -331,7 +312,7 @@ where
 
 	pub fn sort_unstable_by_key<B:Ord,F>(&mut self,f:F)where T:Ord,F:FnMut(&T)->B{self.0.sort_unstable_by_key(f)}
 	pub fn rotate(&mut self,mid:INDEX){
-		self.0.rotate(mid.my_into())
+		self.0.rotate(mid.into_usize())
 	}
 	pub fn clone_from_slice(&mut self, src:&[T]) where T:Clone{
 		self.0.clone_from_slice(src)
@@ -352,12 +333,12 @@ where
 impl<T,INDEX:IndexTrait> Index<INDEX> for Array<T,INDEX>{
 	type Output=T;
 	fn index(&self,i:INDEX)->&T{
-		&self.0.index(i.my_into())
+		&self.0.index(i.into_usize())
 	}
 }
 impl<T,INDEX:IndexTrait> IndexMut<INDEX> for Array<T,INDEX>{
 	fn index_mut(&mut self,i:INDEX)->&mut T{
-		self.0.index_mut(i.my_into())
+		self.0.index_mut(i.into_usize())
 	}
 }
 impl<T,INDEX:IndexTrait> Index<usize> for Array<T,INDEX>{
