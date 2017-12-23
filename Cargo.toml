@@ -2,5 +2,8 @@
 name = "vecgenericindex"
 version = "0.1.0"
 authors = ["dobkeratops <dobkeratopsgit@gmail.com>"]
+description = "wrapper around Vec supporting generic/custom indices, e.g. smaller types then usize, signed types, or strongly typed indices"
+license = "MIT"
+repository = "https://github.com/dobkeratops/rust_arrays_with_generic_index"
 
 [dependencies]
